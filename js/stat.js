@@ -8,6 +8,7 @@ var BAR_WIDTH = 40;
 var CLOUD_X = 100;
 var CLOUD_Y = 10;
 var TEXT_HEIGHT = 20;
+var HEADER_LINE_WIDTH = [180, 200];
 
 var renderCloud = function (ctx, x, y, color, cloudWidth) {
   ctx.fillStyle = color;
@@ -45,13 +46,7 @@ window.renderStatistics = function (ctx, names, times) {
   var maxTime = getMaxElement(times);
   var barGap = Math.floor((cloudWidth - lengthArray * BAR_WIDTH) / (lengthArray + 1));
 
-  /* Поскольку массив может быть разной длины, логично, что облако должно иметь возможность
-  расширяться при увеличинии числа игроков
-  Об этом ничего не сказано в ТЗ, ширина облака там фиксирована и равна 420.
-  Не знаю правильно ли сделала.
-  Хотела константу CLOUD_WIDTH переопределить здесь, но так понимаю это противоречит самому принципу констант,
-  поэтому завела переменную cloudWidth внутри функции */
-
+  /* Если переданный массив слишком длинный, то облако расширяется в ширину */
   if ((cloudWidth - lengthArray * BAR_WIDTH) <= 0) {
     cloudWidth = lengthArray * BAR_WIDTH + GAP * (lengthArray + 1);
     barGap = Math.floor((cloudWidth - names.length * BAR_WIDTH) / (lengthArray + 1));
@@ -62,9 +57,8 @@ window.renderStatistics = function (ctx, names, times) {
   ctx.baseline = 'hanging';
   ctx.font = '20px Tahoma';
   ctx.fillStyle = 'rgb(0, 0, 0)';
-  /* Числа 180 и 200 здесь это ширина текста, если нужно могу тоже вынести в константы */
-  ctx.fillText('Ура вы победили!', CLOUD_X + (cloudWidth - 180) / 2, 2 * TEXT_HEIGHT);
-  ctx.fillText('Список результатов:', CLOUD_X + (cloudWidth - 200) / 2, 3 * TEXT_HEIGHT);
+  ctx.fillText('Ура вы победили!', CLOUD_X + (cloudWidth - HEADER_LINE_WIDTH[0]) / 2, 2 * TEXT_HEIGHT);
+  ctx.fillText('Список результатов:', CLOUD_X + (cloudWidth - HEADER_LINE_WIDTH[1]) / 2, 3 * TEXT_HEIGHT);
 
   for (i = 0; i < lengthArray; i++) {
     if (names[i] === 'Вы') {
@@ -76,9 +70,13 @@ window.renderStatistics = function (ctx, names, times) {
       }
       ctx.fillStyle = 'rgba(0, 0, 255,' + color + ')';
     }
-    ctx.fillRect(CLOUD_X + barGap + i * (barGap + BAR_WIDTH), CLOUD_HEIGHT - 2 * GAP - MAX_BAR_HEIGHT * times[i] / maxTime, BAR_WIDTH, MAX_BAR_HEIGHT * times[i] / maxTime);
+    var x = CLOUD_X + barGap + i * (barGap + BAR_WIDTH);
+    var barHeight = MAX_BAR_HEIGHT * times[i] / maxTime;
+    var y = CLOUD_HEIGHT - 2 * GAP - barHeight;
+
+    ctx.fillRect(x, y, BAR_WIDTH, barHeight);
     ctx.fillStyle = 'rgb(0, 0, 0)';
-    ctx.fillText(names[i], CLOUD_X + barGap + i * (barGap + BAR_WIDTH), CLOUD_HEIGHT);
-    ctx.fillText(Math.floor(times[i]), CLOUD_X + barGap + i * (barGap + BAR_WIDTH), CLOUD_HEIGHT - 3 * GAP - MAX_BAR_HEIGHT * times[i] / maxTime);
+    ctx.fillText(names[i], x, CLOUD_HEIGHT);
+    ctx.fillText(Math.floor(times[i]), x, y - GAP);
   }
 };
