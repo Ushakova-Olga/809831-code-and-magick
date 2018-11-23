@@ -1,33 +1,74 @@
 // Файл setup.js
 'use strict';
 
-var NAMES = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
-var SURNAME = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'];
-var COAT = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
-var EYES = ['black', 'red', 'blue', 'yellow', 'green'];
+var NAMES = [
+  'Иван',
+  'Хуан Себастьян',
+  'Мария',
+  'Кристоф',
+  'Виктор',
+  'Юлия',
+  'Люпита',
+  'Вашингтон'];
+
+var SURNAME = [
+  'да Марья',
+  'Верон',
+  'Мирабелла',
+  'Вальц',
+  'Онопко',
+  'Топольницкая',
+  'Нионго',
+  'Ирвинг'];
+
+var COAT = [
+  'rgb(101, 137, 164)',
+  'rgb(241, 43, 107)',
+  'rgb(146, 100, 161)',
+  'rgb(56, 159, 117)',
+  'rgb(215, 210, 55)',
+  'rgb(0, 0, 0)'];
+
+var EYES = [
+  'black',
+  'red',
+  'blue',
+  'yellow',
+  'green'];
+
+
+var getRandomItem = function (arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+};
 
 /* Генерация персонажа со случайным набором данных */
-var generate = function (personage) {
-  var nameNum = Math.floor(Math.random() * NAMES.length);
-  var surnameNum = Math.floor(Math.random() * SURNAME.length);
-  var order = Math.floor(Math.random() * 2);
-  var coatNum = Math.floor(Math.random() * COAT.length);
-  var eyesNum = Math.floor(Math.random() * EYES.length);
+var generate = function (numPersonages) {
+  var arrayPersonages = [];
 
-  if (order) {
-    personage.name = NAMES[nameNum] + ' ' + SURNAME[surnameNum];
-  } else {
-    personage.name = SURNAME[surnameNum] + ' ' + NAMES[nameNum];
+  for (var i = 0; i < numPersonages; i++) {
+    var personageName;
+    var order = Math.floor(Math.random() * 2);
+    var name = getRandomItem(NAMES);
+    var surname = getRandomItem(SURNAME);
+
+    if (order) {
+      personageName = name + ' ' + surname;
+    } else {
+      personageName = surname + ' ' + name;
+    }
+
+    arrayPersonages[i] = {
+      name: personageName,
+      coatColor: getRandomItem(COAT),
+      eyesColor: getRandomItem(EYES)
+    };
   }
-
-  personage.coatColor = COAT[coatNum];
-  personage.eyesColor = EYES[eyesNum];
+  return arrayPersonages;
 };
 
 /* создание DOM-элемента на основе JS-объекта */
 var renderWizard = function (wizard, template) {
   var wizardElement = template.cloneNode(true);
-
   wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
   wizardElement.querySelector('.wizard-coat').style.fill = wizard.coatColor;
   wizardElement.querySelector('.wizard-eyes').style.fill = wizard.eyesColor;
@@ -36,45 +77,15 @@ var renderWizard = function (wizard, template) {
 };
 
 /* функция заполнения блока DOM-элементами на основе массива JS-объектов */
-var appendWizards = function (arr, elementDom) {
+var appendWizards = function (arr) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < arr.length; i++) {
     fragment.appendChild(renderWizard(arr[i], similarWizardTemplate));
   }
-  elementDom.appendChild(fragment);
-  userDialog.querySelector('.setup-similar').classList.remove('hidden');
+  return fragment;
 };
 
-var personage1 = {
-  name: '',
-  coatColor: '',
-  eyesColor: ''
-};
-
-var personage2 = {
-  name: '',
-  coatColor: '',
-  eyesColor: ''
-};
-
-var personage3 = {
-  name: '',
-  coatColor: '',
-  eyesColor: ''
-};
-
-var personage4 = {
-  name: '',
-  coatColor: '',
-  eyesColor: ''
-};
-
-var wizards = [personage1, personage2, personage3, personage4];
-
-generate(personage1);
-generate(personage2);
-generate(personage3);
-generate(personage4);
+var wizards = generate(4);
 
 /* Найти и показать спрятанный блок с персонажем */
 var userDialog = document.querySelector('.setup');
@@ -86,4 +97,7 @@ var similarWizardTemplate = document.querySelector('#similar-wizard-template')
     .content
     .querySelector('.setup-similar-item');
 
-appendWizards(wizards, similarListElement, userDialog);
+/* Подготовили фрагмент с персонажами и вставили его в блок с похожими персонажами */
+var fragmentWizards = appendWizards(wizards);
+similarListElement.appendChild(fragmentWizards);
+userDialog.querySelector('.setup-similar').classList.remove('hidden');
