@@ -77,10 +77,10 @@ var renderWizard = function (wizard, template) {
 };
 
 /* функция заполнения блока DOM-элементами на основе массива JS-объектов */
-var appendWizards = function (arr) {
+var createFragmentWizards = function (arr, template) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < arr.length; i++) {
-    fragment.appendChild(renderWizard(arr[i], similarWizardTemplate));
+    fragment.appendChild(renderWizard(arr[i], template));
   }
   return fragment;
 };
@@ -98,6 +98,6 @@ var similarWizardTemplate = document.querySelector('#similar-wizard-template')
     .querySelector('.setup-similar-item');
 
 /* Подготовили фрагмент с персонажами и вставили его в блок с похожими персонажами */
-var fragmentWizards = appendWizards(wizards);
+var fragmentWizards = createFragmentWizards(wizards, similarWizardTemplate);
 similarListElement.appendChild(fragmentWizards);
 userDialog.querySelector('.setup-similar').classList.remove('hidden');
