@@ -46,6 +46,25 @@ var FIREBALL = [
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
 
+/* спрятанный блок с персонажем */
+var setup = document.querySelector('.setup');
+/* блок с похожими персонажами и взять оттуда шаблон */
+var similarListElement = setup.querySelector('.setup-similar-list');
+var similarWizardTemplate = document.querySelector('#similar-wizard-template')
+    .content
+    .querySelector('.setup-similar-item');
+/* Аватарка по нажатию которой открывается setup*/
+var setupOpen = document.querySelector('.setup-open');
+
+var setupClose = setup.querySelector('.setup-close');
+var userNameInput = setup.querySelector('.setup-user-name');
+var wizardCoat = setup.querySelector('.setup-wizard .wizard-coat');
+var setupInputCoat = setup.querySelector('[name="coat-color"]');
+var setupInputEyes = setup.querySelector('[name="eyes-color"]');
+var wizardEyes = setup.querySelector('.setup-wizard .wizard-eyes');
+var wizardFireball = setup.querySelector('.setup-fireball-wrap');
+var setupInputFireball = setup.querySelector('.setup-fireball-wrap input');
+
 var getRandomItem = function (arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 };
@@ -96,26 +115,10 @@ var createFragmentWizards = function (arr, template) {
 
 var wizards = generate(4);
 
-/* Найти и показать спрятанный блок с персонажем */
-var userDialog = document.querySelector('.setup');
-
-/* Найти блок с похожими персонажами и взять оттуда шаблон */
-var similarListElement = userDialog.querySelector('.setup-similar-list');
-var similarWizardTemplate = document.querySelector('#similar-wizard-template')
-    .content
-    .querySelector('.setup-similar-item');
-
 /* Подготовили фрагмент с персонажами и вставили его в блок с похожими персонажами */
 var fragmentWizards = createFragmentWizards(wizards, similarWizardTemplate);
 similarListElement.appendChild(fragmentWizards);
-userDialog.querySelector('.setup-similar').classList.remove('hidden');
-
-// Нажатие на элемент .setup-open приводит
-var setupOpen = document.querySelector('.setup-open');
-
-// к появлению диалогового окна .setup.
-var setup = document.querySelector('.setup');
-var setupClose = setup.querySelector('.setup-close');
+setup.querySelector('.setup-similar').classList.remove('hidden');
 
 /* Обработчик события - нажатие на ESC */
 var onPopupEscPress = function (evt) {
@@ -160,7 +163,6 @@ setupClose.addEventListener('keydown', function (evt) {
   }
 });
 
-var userNameInput = setup.querySelector('.setup-user-name');
 /* Обработчик события ввод в поле - имя пользователя */
 userNameInput.addEventListener('input', function (evt) {
   var target = evt.target;
@@ -171,29 +173,21 @@ userNameInput.addEventListener('input', function (evt) {
   }
 });
 
-/*  Задание цвета плащу, одновременно присваиваем первому инпуту значение */
-var wizardCoat = document.querySelector('.setup-wizard .wizard-coat');
-var setupInput = document.querySelectorAll('.setup-player input');
-
+/*  Задание цвета плащу, одновременно присваиваем соответствующему инпуту значение */
 /* Обработчик события - клик на плаще волшебника */
 wizardCoat.addEventListener('click', function () {
   wizardCoat.style.fill = getRandomItem(COAT);
-  setupInput[0].value = wizardCoat.style.fill;
+  setupInputCoat.value = wizardCoat.style.fill;
 });
 
-/*  Задание цвета глазам, одновременно присваиваем второму инпуту значение */
-var wizardEyes = document.querySelector('.setup-wizard .wizard-eyes');
-
+/*  Задание цвета глазам, одновременно присваиваем соответствующему инпуту значение */
 /* Обработчик события - клик на глазах волшебника */
 wizardEyes.addEventListener('click', function () {
   wizardEyes.style.fill = getRandomItem(EYES);
-  setupInput[1].value = wizardEyes.style.fill;
+  setupInputEyes.value = wizardEyes.style.fill;
 });
 
 /*  Задание цвета файерболу и соответствующему инпуту значение */
-var wizardFireball = document.querySelector('.setup-fireball-wrap');
-var setupInputFireball = document.querySelector('.setup-fireball-wrap input');
-
 /* Обработчик события - клик на файербол */
 wizardFireball.addEventListener('click', function () {
   var color = getRandomItem(FIREBALL);
