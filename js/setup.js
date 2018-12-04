@@ -137,6 +137,9 @@ var openPopup = function () {
 var closePopup = function () {
   setup.classList.add('hidden');
   document.removeEventListener('keydown', onPopupEscPress);
+  /* Сброс положения на изначальное */
+  setup.style.top = '80px';
+  setup.style.left = '50%';
 };
 
 /* Обработчик события - клик на аватарке */
