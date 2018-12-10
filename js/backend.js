@@ -1,4 +1,3 @@
-// Файл load.js
 'use strict';
 
 (function () {
