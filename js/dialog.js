@@ -17,6 +17,10 @@
   var wizardEyes = setup.querySelector('.setup-wizard .wizard-eyes');
   var wizardFireball = setup.querySelector('.setup-fireball-wrap');
   var setupInputFireball = setup.querySelector('.setup-fireball-wrap input');
+  var goalEyes = setupInputEyes.value;
+  var goalFireball = setupInputFireball.value;
+  var goalCoat = setupInputCoat.value;
+  var wizardsCopy = [];
 
   /* Обработчик события - нажатие на ESC */
   var onPopupEscPress = function (evt) {
@@ -73,6 +77,12 @@
   wizardCoat.addEventListener('click', function () {
     wizardCoat.style.fill = window.util.getRandomItem('coat');
     setupInputCoat.value = wizardCoat.style.fill;
+
+    goalEyes = setupInputEyes.value;
+    goalFireball = setupInputFireball.value;
+    goalCoat = setupInputCoat.value;
+    wizardsCopy = window.similar.range(window.setup.wizardArray, goalCoat, goalEyes, goalFireball);
+    window.debounce(window.similar.change(wizardsCopy));
   });
 
   /*  Задание цвета глазам, одновременно присваиваем соответствующему инпуту значение */
@@ -80,6 +90,13 @@
   wizardEyes.addEventListener('click', function () {
     wizardEyes.style.fill = window.util.getRandomItem('eyes');
     setupInputEyes.value = wizardEyes.style.fill;
+
+    goalEyes = setupInputEyes.value;
+    goalFireball = setupInputFireball.value;
+    goalCoat = setupInputCoat.value;
+    wizardsCopy = window.similar.range(window.setup.wizardArray, goalCoat, goalEyes, goalFireball);
+    window.debounce(window.similar.change(wizardsCopy));
+
   });
 
   /*  Задание цвета файерболу и соответствующему инпуту значение */
@@ -88,5 +105,11 @@
     var color = window.util.getRandomItem('fireball');
     wizardFireball.style.background = color;
     setupInputFireball.value = color;
+
+    goalEyes = setupInputEyes.value;
+    goalFireball = setupInputFireball.value;
+    goalCoat = setupInputCoat.value;
+    wizardsCopy = window.similar.range(window.setup.wizardArray, goalCoat, goalEyes, goalFireball);
+    window.debounce(window.similar.change(wizardsCopy));
   });
 })();

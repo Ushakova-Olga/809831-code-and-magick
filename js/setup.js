@@ -2,6 +2,17 @@
 
 /* Генерация похожих персонажей */
 (function () {
+  window.setup = {
+    wizardArray: [],
+    /* создание DOM-элемента на основе JS-объекта */
+    renderWizard: function (wizard, template) {
+      var wizardElement = template.cloneNode(true);
+      wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
+      wizardElement.querySelector('.wizard-coat').style.fill = wizard.colorCoat; /* coatColor;*/
+      wizardElement.querySelector('.wizard-eyes').style.fill = wizard.colorEyes; /* eyesColor;*/
+      return wizardElement;
+    }
+  };
   /* спрятанный блок с персонажем */
   var setup = document.querySelector('.setup');
   /* блок с похожими персонажами и взять оттуда шаблон */
@@ -9,6 +20,14 @@
   var similarWizardTemplate = document.querySelector('#similar-wizard-template')
       .content
       .querySelector('.setup-similar-item');
+  var setupInputCoat = setup.querySelector('[name="coat-color"]');
+  var setupInputEyes = setup.querySelector('[name="eyes-color"]');
+  var setupInputFireball = setup.querySelector('.setup-fireball-wrap input');
+
+  var goalEyes = setupInputEyes.value;
+  var goalFireball = setupInputFireball.value;
+  var goalCoat = setupInputCoat.value;
+  var wizardsCopy = [];
 
   /* Генерация персонажа со случайным набором данных */
   /* var generate = function (numPersonages) {
@@ -36,14 +55,14 @@
   };*/
 
   /* создание DOM-элемента на основе JS-объекта */
-  var renderWizard = function (wizard, template) {
+  /* var renderWizard = function (wizard, template) {
     var wizardElement = template.cloneNode(true);
     wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
-    wizardElement.querySelector('.wizard-coat').style.fill = wizard.colorCoat; /* coatColor;*/
-    wizardElement.querySelector('.wizard-eyes').style.fill = wizard.colorEyes; /* eyesColor;*/
+    wizardElement.querySelector('.wizard-coat').style.fill = wizard.colorCoat;
+    wizardElement.querySelector('.wizard-eyes').style.fill = wizard.colorEyes;
 
     return wizardElement;
-  };
+  };*/
 
   /* функция заполнения блока DOM-элементами на основе массива JS-объектов */
   /* var createFragmentWizards = function (arr, template) {
@@ -73,9 +92,15 @@
 
   /* В случае если данные успешно получены */
   var successHandler = function (wizards) {
+    window.setup.wizardArray = wizards.slice();
+    goalEyes = setupInputEyes.value;
+    goalFireball = setupInputFireball.value;
+    goalCoat = setupInputCoat.value;
+    wizardsCopy = window.similar.range(wizards, goalCoat, goalEyes, goalFireball);
+
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < 4; i++) {
-      fragment.appendChild(renderWizard(wizards[i], similarWizardTemplate));
+      fragment.appendChild(window.setup.renderWizard(wizardsCopy[i], similarWizardTemplate));
     }
     similarListElement.appendChild(fragment);
 
