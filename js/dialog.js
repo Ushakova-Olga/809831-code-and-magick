@@ -1,7 +1,7 @@
 'use strict';
 
-/* Работа с диалогом (Блок с персонажем) - открытие окна, закрытие, \
-обработка полей ввода - задание параметов волшебника */
+/* Работа блоком setup - открытие окна, закрытие, \
+обработка текстового поля ввода - имя  */
 (function () {
   /* спрятанный блок с персонажем */
   var setup = document.querySelector('.setup');
@@ -11,16 +11,6 @@
 
   var setupClose = setup.querySelector('.setup-close');
   var userNameInput = setup.querySelector('.setup-user-name');
-  var wizardCoat = setup.querySelector('.setup-wizard .wizard-coat');
-  var setupInputCoat = setup.querySelector('[name="coat-color"]');
-  var setupInputEyes = setup.querySelector('[name="eyes-color"]');
-  var wizardEyes = setup.querySelector('.setup-wizard .wizard-eyes');
-  var wizardFireball = setup.querySelector('.setup-fireball-wrap');
-  var setupInputFireball = setup.querySelector('.setup-fireball-wrap input');
-  var goalEyes = setupInputEyes.value;
-  var goalFireball = setupInputFireball.value;
-  var goalCoat = setupInputCoat.value;
-  var wizardsCopy = [];
 
   /* Обработчик события - нажатие на ESC */
   var onPopupEscPress = function (evt) {
@@ -70,46 +60,5 @@
     } else {
       target.setCustomValidity('');
     }
-  });
-
-  /*  Задание цвета плащу, одновременно присваиваем соответствующему инпуту значение */
-  /* Обработчик события - клик на плаще волшебника */
-  wizardCoat.addEventListener('click', function () {
-    wizardCoat.style.fill = window.util.getRandomItem('coat');
-    setupInputCoat.value = wizardCoat.style.fill;
-
-    goalEyes = setupInputEyes.value;
-    goalFireball = setupInputFireball.value;
-    goalCoat = setupInputCoat.value;
-    wizardsCopy = window.similar.range(window.setup.wizardArray, goalCoat, goalEyes, goalFireball);
-    window.debounce(window.similar.change(wizardsCopy));
-  });
-
-  /*  Задание цвета глазам, одновременно присваиваем соответствующему инпуту значение */
-  /* Обработчик события - клик на глазах волшебника */
-  wizardEyes.addEventListener('click', function () {
-    wizardEyes.style.fill = window.util.getRandomItem('eyes');
-    setupInputEyes.value = wizardEyes.style.fill;
-
-    goalEyes = setupInputEyes.value;
-    goalFireball = setupInputFireball.value;
-    goalCoat = setupInputCoat.value;
-    wizardsCopy = window.similar.range(window.setup.wizardArray, goalCoat, goalEyes, goalFireball);
-    window.debounce(window.similar.change(wizardsCopy));
-
-  });
-
-  /*  Задание цвета файерболу и соответствующему инпуту значение */
-  /* Обработчик события - клик на файербол */
-  wizardFireball.addEventListener('click', function () {
-    var color = window.util.getRandomItem('fireball');
-    wizardFireball.style.background = color;
-    setupInputFireball.value = color;
-
-    goalEyes = setupInputEyes.value;
-    goalFireball = setupInputFireball.value;
-    goalCoat = setupInputCoat.value;
-    wizardsCopy = window.similar.range(window.setup.wizardArray, goalCoat, goalEyes, goalFireball);
-    window.debounce(window.similar.change(wizardsCopy));
   });
 })();

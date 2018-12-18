@@ -1,88 +1,25 @@
 'use strict';
 
-/* Генерация похожих персонажей */
+/* Работа с блоком setup - отправка из формы данных на сервер и получение в наш блок данных о волшебниках,
+обработчики событий, связаннее с изменением цвета плаща, глаз, файербола, по которым вызывается фильтрация  */
 (function () {
-  window.setup = {
-    wizardArray: [],
-    /* создание DOM-элемента на основе JS-объекта */
-    renderWizard: function (wizard, template) {
-      var wizardElement = template.cloneNode(true);
-      wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
-      wizardElement.querySelector('.wizard-coat').style.fill = wizard.colorCoat; /* coatColor;*/
-      wizardElement.querySelector('.wizard-eyes').style.fill = wizard.colorEyes; /* eyesColor;*/
-      return wizardElement;
-    }
-  };
   /* спрятанный блок с персонажем */
   var setup = document.querySelector('.setup');
-  /* блок с похожими персонажами и взять оттуда шаблон */
-  var similarListElement = setup.querySelector('.setup-similar-list');
-  var similarWizardTemplate = document.querySelector('#similar-wizard-template')
-      .content
-      .querySelector('.setup-similar-item');
   var setupInputCoat = setup.querySelector('[name="coat-color"]');
   var setupInputEyes = setup.querySelector('[name="eyes-color"]');
   var setupInputFireball = setup.querySelector('.setup-fireball-wrap input');
-
   var goalEyes = setupInputEyes.value;
   var goalFireball = setupInputFireball.value;
   var goalCoat = setupInputCoat.value;
+  var wizardArray = [];
   var wizardsCopy = [];
-
-  /* Генерация персонажа со случайным набором данных */
-  /* var generate = function (numPersonages) {
-    var arrayPersonages = [];
-
-    for (var i = 0; i < numPersonages; i++) {
-      var personageName;
-      var order = Math.floor(Math.random() * 2);
-      var name = window.util.getRandomItem('names');
-      var surname = window.util.getRandomItem('surname');
-
-      if (order) {
-        personageName = name + ' ' + surname;
-      } else {
-        personageName = surname + ' ' + name;
-      }
-
-      arrayPersonages[i] = {
-        name: personageName,
-        coatColor: window.util.getRandomItem('coat'),
-        eyesColor: window.util.getRandomItem('eyes')
-      };
-    }
-    return arrayPersonages;
-  };*/
-
-  /* создание DOM-элемента на основе JS-объекта */
-  /* var renderWizard = function (wizard, template) {
-    var wizardElement = template.cloneNode(true);
-    wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
-    wizardElement.querySelector('.wizard-coat').style.fill = wizard.colorCoat;
-    wizardElement.querySelector('.wizard-eyes').style.fill = wizard.colorEyes;
-
-    return wizardElement;
-  };*/
-
-  /* функция заполнения блока DOM-элементами на основе массива JS-объектов */
-  /* var createFragmentWizards = function (arr, template) {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < arr.length; i++) {
-      fragment.appendChild(renderWizard(arr[i], template));
-    }
-    return fragment;
-  };
-
-  var wizards = generate(4);*/
-
-  /* Подготовили фрагмент с персонажами и вставили его в блок с похожими персонажами */
-  /* var fragmentWizards = createFragmentWizards(wizards, similarWizardTemplate);
-  similarListElement.appendChild(fragmentWizards);
-  setup.querySelector('.setup-similar').classList.remove('hidden');*/
-
-  /* 6 Задание */
-  /* Отправить данные из формы про нашего волшебника на сервер */
   var form = setup.querySelector('.setup-wizard-form');
+
+  var wizardCoat = setup.querySelector('.setup-wizard .wizard-coat');
+  var wizardEyes = setup.querySelector('.setup-wizard .wizard-eyes');
+  var wizardFireball = setup.querySelector('.setup-fireball-wrap');
+
+  /* Отправить данные из формы про нашего волшебника на сервер */
   form.addEventListener('submit', function (evt) {
     window.backend.save(new FormData(form), function () {
       setup.classList.add('hidden');
@@ -92,19 +29,12 @@
 
   /* В случае если данные успешно получены */
   var successHandler = function (wizards) {
-    window.setup.wizardArray = wizards.slice();
+    wizardArray = wizards.slice();
     goalEyes = setupInputEyes.value;
     goalFireball = setupInputFireball.value;
     goalCoat = setupInputCoat.value;
-    wizardsCopy = window.similar.range(wizards, goalCoat, goalEyes, goalFireball);
-
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < 4; i++) {
-      fragment.appendChild(window.setup.renderWizard(wizardsCopy[i], similarWizardTemplate));
-    }
-    similarListElement.appendChild(fragment);
-
-    setup.querySelector('.setup-similar').classList.remove('hidden');
+    wizardsCopy = window.filter.range(wizards, goalCoat, goalEyes, goalFireball);
+    window.filter.appendWizards(wizardsCopy);
   };
 
   var errorHandler = function (errorMessage) {
@@ -121,5 +51,45 @@
   };
 
   window.backend.load(successHandler, errorHandler);
-  /* window.backend.loadJsonp(successHandler, errorHandler);*/
+
+  /*  Задание цвета плащу, одновременно присваиваем соответствующему инпуту значение */
+  /* Обработчик события - клик на плаще волшебника */
+  wizardCoat.addEventListener('click', function () {
+    wizardCoat.style.fill = window.util.getRandomItem('coat');
+    setupInputCoat.value = wizardCoat.style.fill;
+
+    goalEyes = setupInputEyes.value;
+    goalFireball = setupInputFireball.value;
+    goalCoat = setupInputCoat.value;
+    wizardsCopy = window.filter.range(wizardArray, goalCoat, goalEyes, goalFireball);
+    window.debounce(window.filter.updateWizards(wizardsCopy));
+  });
+
+  /*  Задание цвета глазам, одновременно присваиваем соответствующему инпуту значение */
+  /* Обработчик события - клик на глазах волшебника */
+  wizardEyes.addEventListener('click', function () {
+    wizardEyes.style.fill = window.util.getRandomItem('eyes');
+    setupInputEyes.value = wizardEyes.style.fill;
+
+    goalEyes = setupInputEyes.value;
+    goalFireball = setupInputFireball.value;
+    goalCoat = setupInputCoat.value;
+    wizardsCopy = window.filter.range(wizardArray, goalCoat, goalEyes, goalFireball);
+    window.debounce(window.filter.updateWizards(wizardsCopy));
+
+  });
+
+  /*  Задание цвета файерболу и соответствующему инпуту значение */
+  /* Обработчик события - клик на файербол */
+  wizardFireball.addEventListener('click', function () {
+    var color = window.util.getRandomItem('fireball');
+    wizardFireball.style.background = color;
+    setupInputFireball.value = color;
+
+    goalEyes = setupInputEyes.value;
+    goalFireball = setupInputFireball.value;
+    goalCoat = setupInputCoat.value;
+    wizardsCopy = window.filter.range(wizardArray, goalCoat, goalEyes, goalFireball);
+    window.debounce(window.filter.updateWizards(wizardsCopy));
+  });
 })();
